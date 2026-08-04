@@ -8,7 +8,6 @@ import {
   Pressable,
   ScrollView,
   Modal,
-  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -18,9 +17,10 @@ import { useAlert } from '@/template';
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i);
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function SettingsScreen() {
-  const { settings, loading, toggleNotifications, updateTime, formatTime } =
+  const { settings, loading, toggleNotifications, updateTime, updateDays, formatTime } =
     useNotificationSettings();
   const { showAlert } = useAlert();
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -52,6 +52,23 @@ export default function SettingsScreen() {
     await updateTime(tempHour, tempMinute);
   };
 
+  const handleToggleDay = async (day: number) => {
+    if (!settings.enabled) return;
+    const current = settings.days;
+    let newDays: number[];
+    if (current.includes(day)) {
+      // Prevent deselecting last day
+      if (current.length === 1) {
+        showAlert('At least one day required', 'Select at least one day for reminders.');
+        return;
+      }
+      newDays = current.filter(d => d !== day);
+    } else {
+      newDays = [...current, day].sort((a, b) => a - b);
+    }
+    await updateDays(newDays);
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
@@ -75,7 +92,7 @@ export default function SettingsScreen() {
           <Text style={styles.headerSubtitle}>Stay consistent with daily nudges</Text>
         </View>
 
-        {/* Notification Toggle Card */}
+        {/* Notification Toggle */}
         <View style={styles.card}>
           <View style={styles.cardRow}>
             <View style={styles.cardIconWrap}>
@@ -83,9 +100,7 @@ export default function SettingsScreen() {
             </View>
             <View style={styles.cardTextBlock}>
               <Text style={styles.cardTitle}>Daily Reminder</Text>
-              <Text style={styles.cardDesc}>
-                Get a daily notification to do your routine
-              </Text>
+              <Text style={styles.cardDesc}>Get a notification to do your routine</Text>
             </View>
             <Switch
               value={settings.enabled}
@@ -97,7 +112,7 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Time Picker Card */}
+        {/* Time Picker */}
         <View style={[styles.card, !settings.enabled ? styles.cardDisabled : null]}>
           <Pressable
             onPress={settings.enabled ? openTimePicker : undefined}
@@ -119,7 +134,7 @@ export default function SettingsScreen() {
               </Text>
               <Text style={[styles.cardDesc, !settings.enabled ? styles.textDisabled : null]}>
                 {settings.enabled
-                  ? `Every day at ${formatTime(settings.hour, settings.minute)}`
+                  ? `At ${formatTime(settings.hour, settings.minute)}`
                   : 'Enable reminders to set a time'}
               </Text>
             </View>
@@ -134,11 +149,60 @@ export default function SettingsScreen() {
           </Pressable>
         </View>
 
-        {/* Info Block */}
+        {/* Day Selector */}
+        <View style={[styles.card, !settings.enabled ? styles.cardDisabled : null]}>
+          <View style={styles.cardRowTop}>
+            <View style={styles.cardIconWrap}>
+              <MaterialIcons
+                name="date-range"
+                size={22}
+                color={settings.enabled ? Colors.primary : Colors.textMuted}
+              />
+            </View>
+            <View style={styles.cardTextBlock}>
+              <Text style={[styles.cardTitle, !settings.enabled ? styles.textDisabled : null]}>
+                Reminder Days
+              </Text>
+              <Text style={[styles.cardDesc, !settings.enabled ? styles.textDisabled : null]}>
+                {settings.enabled
+                  ? `${settings.days.length} day${settings.days.length !== 1 ? 's' : ''} selected`
+                  : 'Enable reminders to choose days'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.dayGrid}>
+            {DAY_LABELS.map((label, index) => {
+              const isSelected = settings.days.includes(index);
+              return (
+                <Pressable
+                  key={index}
+                  onPress={() => handleToggleDay(index)}
+                  style={({ pressed }) => [
+                    styles.dayBtn,
+                    isSelected && settings.enabled ? styles.dayBtnActive : null,
+                    pressed && settings.enabled ? { opacity: 0.75 } : null,
+                  ]}
+                  accessibilityLabel={`${label} ${isSelected ? 'selected' : 'not selected'}`}
+                >
+                  <Text
+                    style={[
+                      styles.dayBtnText,
+                      isSelected && settings.enabled ? styles.dayBtnTextActive : null,
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </Pressable>
+              );
+            })}
+          </View>
+        </View>
+
+        {/* Info */}
         <View style={styles.infoBlock}>
           <MaterialIcons name="info-outline" size={16} color={Colors.textMuted} />
           <Text style={styles.infoText}>
-            Notifications remind you to complete your 4-exercise hamstring and hip flexibility routine. Each session takes approximately 15 minutes.
+            Reminders are scheduled for your selected days and time. Each session takes approximately 15 minutes.
           </Text>
         </View>
 
@@ -146,7 +210,7 @@ export default function SettingsScreen() {
         <Text style={styles.sectionLabel}>Your Routine</Text>
         {[
           { emoji: '🧠', name: 'Sciatic Nerve Floss', sets: '3 × 12 reps/side' },
-          { emoji: '🦋', name: "Butterfly PNF", sets: '3 × 8 reps/side' },
+          { emoji: '🦋', name: 'Butterfly PNF', sets: '3 × 8 reps/side' },
           { emoji: '🦵', name: 'Banded Hamstring PNF', sets: '3 × 4 reps/leg' },
           { emoji: '💪', name: 'Compression Lifts', sets: '3 × 8 reps/leg' },
         ].map((item, index) => (
@@ -170,7 +234,6 @@ export default function SettingsScreen() {
             <Text style={styles.modalTitle}>Set Reminder Time</Text>
 
             <View style={styles.timePickerRow}>
-              {/* Hour Picker */}
               <View style={styles.pickerColumn}>
                 <Text style={styles.pickerLabel}>Hour</Text>
                 <ScrollView style={styles.pickerScroll} showsVerticalScrollIndicator={false}>
@@ -195,7 +258,6 @@ export default function SettingsScreen() {
 
               <View style={styles.pickerDivider} />
 
-              {/* Minute Picker */}
               <View style={styles.pickerColumn}>
                 <Text style={styles.pickerLabel}>Minute</Text>
                 <ScrollView style={styles.pickerScroll} showsVerticalScrollIndicator={false}>
@@ -219,10 +281,7 @@ export default function SettingsScreen() {
               </View>
             </View>
 
-            {/* Preview */}
-            <Text style={styles.timePreview}>
-              {formatTime(tempHour, tempMinute)} every day
-            </Text>
+            <Text style={styles.timePreview}>{formatTime(tempHour, tempMinute)}</Text>
 
             <View style={styles.modalButtons}>
               <Pressable
@@ -246,40 +305,18 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  scroll: {
-    flex: 1,
-  },
+  safe: { flex: 1, backgroundColor: Colors.background },
+  scroll: { flex: 1 },
   content: {
     paddingHorizontal: Spacing.md,
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xxl,
   },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  loadingText: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.md,
-  },
-  header: {
-    marginBottom: Spacing.lg,
-  },
-  headerTitle: {
-    color: Colors.text,
-    fontSize: FontSize.xxl,
-    fontWeight: '700',
-  },
-  headerSubtitle: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.sm,
-    marginTop: 2,
-  },
+  loadingContainer: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  loadingText: { color: Colors.textSecondary, fontSize: FontSize.md },
+  header: { marginBottom: Spacing.lg },
+  headerTitle: { color: Colors.text, fontSize: FontSize.xxl, fontWeight: '700' },
+  headerSubtitle: { color: Colors.textSecondary, fontSize: FontSize.sm, marginTop: 2 },
   card: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
@@ -288,13 +325,19 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.sm,
     overflow: 'hidden',
   },
-  cardDisabled: {
-    opacity: 0.5,
-  },
+  cardDisabled: { opacity: 0.45 },
   cardRow: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+  cardRowTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    paddingBottom: Spacing.sm,
     gap: Spacing.sm,
   },
   cardIconWrap: {
@@ -305,35 +348,44 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardTextBlock: {
-    flex: 1,
-  },
-  cardTitle: {
-    color: Colors.text,
-    fontSize: FontSize.md,
-    fontWeight: '600',
-  },
-  cardDesc: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.xs,
-    marginTop: 2,
-  },
-  textDisabled: {
-    color: Colors.textMuted,
-  },
-  timeBadge: {
+  cardTextBlock: { flex: 1 },
+  cardTitle: { color: Colors.text, fontSize: FontSize.md, fontWeight: '600' },
+  cardDesc: { color: Colors.textSecondary, fontSize: FontSize.xs, marginTop: 2 },
+  textDisabled: { color: Colors.textMuted },
+  timeBadge: { flexDirection: 'row', alignItems: 'center', gap: 2 },
+  timeBadgeText: { color: Colors.primary, fontSize: FontSize.sm, fontWeight: '600' },
+  pressed: { opacity: 0.7 },
+  // Day grid
+  dayGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
+  },
+  dayBtn: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: Radius.sm,
+    backgroundColor: Colors.surfaceElevated,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    minWidth: 44,
     alignItems: 'center',
-    gap: 2,
   },
-  timeBadgeText: {
+  dayBtnActive: {
+    backgroundColor: Colors.primaryDim,
+    borderColor: Colors.primary,
+  },
+  dayBtnText: {
+    color: Colors.textMuted,
+    fontSize: FontSize.xs,
+    fontWeight: '700',
+  },
+  dayBtnTextActive: {
     color: Colors.primary,
-    fontSize: FontSize.sm,
-    fontWeight: '600',
   },
-  pressed: {
-    opacity: 0.7,
-  },
+  // Info
   infoBlock: {
     flexDirection: 'row',
     gap: Spacing.xs,
@@ -341,12 +393,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     marginBottom: Spacing.lg,
   },
-  infoText: {
-    flex: 1,
-    color: Colors.textMuted,
-    fontSize: FontSize.xs,
-    lineHeight: 18,
-  },
+  infoText: { flex: 1, color: Colors.textMuted, fontSize: FontSize.xs, lineHeight: 18 },
   sectionLabel: {
     color: Colors.textSecondary,
     fontSize: FontSize.xs,
@@ -363,20 +410,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.border,
   },
-  routineEmoji: {
-    fontSize: 20,
-    width: 30,
-  },
-  routineName: {
-    flex: 1,
-    color: Colors.text,
-    fontSize: FontSize.sm,
-    fontWeight: '500',
-  },
-  routineSets: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.xs,
-  },
+  routineEmoji: { fontSize: 20, width: 30 },
+  routineName: { flex: 1, color: Colors.text, fontSize: FontSize.sm, fontWeight: '500' },
+  routineSets: { color: Colors.textSecondary, fontSize: FontSize.xs },
   // Modal
   modalOverlay: {
     flex: 1,
@@ -397,14 +433,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: Spacing.lg,
   },
-  timePickerRow: {
-    flexDirection: 'row',
-    height: 200,
-    gap: Spacing.sm,
-  },
-  pickerColumn: {
-    flex: 1,
-  },
+  timePickerRow: { flexDirection: 'row', height: 200, gap: Spacing.sm },
+  pickerColumn: { flex: 1 },
   pickerLabel: {
     color: Colors.textSecondary,
     fontSize: FontSize.xs,
@@ -414,31 +444,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: Spacing.xs,
   },
-  pickerScroll: {
-    flex: 1,
-  },
+  pickerScroll: { flex: 1 },
   pickerItem: {
     paddingVertical: 10,
     paddingHorizontal: Spacing.sm,
     borderRadius: Radius.sm,
     alignItems: 'center',
   },
-  pickerItemSelected: {
-    backgroundColor: Colors.primaryDim,
-  },
-  pickerItemText: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.sm,
-  },
-  pickerItemTextSelected: {
-    color: Colors.primary,
-    fontWeight: '700',
-  },
-  pickerDivider: {
-    width: 1,
-    backgroundColor: Colors.border,
-    marginVertical: Spacing.sm,
-  },
+  pickerItemSelected: { backgroundColor: Colors.primaryDim },
+  pickerItemText: { color: Colors.textSecondary, fontSize: FontSize.sm },
+  pickerItemTextSelected: { color: Colors.primary, fontWeight: '700' },
+  pickerDivider: { width: 1, backgroundColor: Colors.border, marginVertical: Spacing.sm },
   timePreview: {
     color: Colors.primary,
     fontSize: FontSize.lg,
@@ -446,10 +462,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: Spacing.lg,
   },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
-  },
+  modalButtons: { flexDirection: 'row', gap: Spacing.sm },
   modalCancel: {
     flex: 1,
     paddingVertical: Spacing.md,
@@ -459,11 +472,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.border,
   },
-  modalCancelText: {
-    color: Colors.textSecondary,
-    fontSize: FontSize.md,
-    fontWeight: '600',
-  },
+  modalCancelText: { color: Colors.textSecondary, fontSize: FontSize.md, fontWeight: '600' },
   modalConfirm: {
     flex: 1,
     paddingVertical: Spacing.md,
@@ -471,9 +480,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.primary,
   },
-  modalConfirmText: {
-    color: Colors.background,
-    fontSize: FontSize.md,
-    fontWeight: '700',
-  },
+  modalConfirmText: { color: Colors.background, fontSize: FontSize.md, fontWeight: '700' },
 });

@@ -3,22 +3,27 @@ import { useState, useEffect, useCallback } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   requestNotificationPermissions,
-  scheduleDailyReminder,
+  scheduleWeeklyReminders,
   cancelDailyReminder,
 } from '@/services/notificationService';
 
-const STORAGE_KEY = 'stretch_notification_settings';
+const STORAGE_KEY = 'stretch_notification_settings_v2';
 
-interface NotificationSettings {
+// 0 = Sunday, 1 = Monday ... 6 = Saturday
+const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
+
+export interface NotificationSettings {
   enabled: boolean;
   hour: number;
   minute: number;
+  days: number[];
 }
 
 const DEFAULT_SETTINGS: NotificationSettings = {
   enabled: false,
   hour: 8,
   minute: 0,
+  days: ALL_DAYS,
 };
 
 export function useNotificationSettings() {
@@ -62,7 +67,9 @@ export function useNotificationSettings() {
       setPermissionGranted(true);
       const newSettings = { ...settings, enabled: true };
       await saveSettings(newSettings);
-      await scheduleDailyReminder(newSettings.hour, newSettings.minute);
+      if (newSettings.days.length > 0) {
+        await scheduleWeeklyReminders(newSettings.hour, newSettings.minute, newSettings.days);
+      }
       return true;
     } else {
       await cancelDailyReminder();
@@ -75,8 +82,20 @@ export function useNotificationSettings() {
   const updateTime = useCallback(async (hour: number, minute: number) => {
     const newSettings = { ...settings, hour, minute };
     await saveSettings(newSettings);
+    if (newSettings.enabled && newSettings.days.length > 0) {
+      await scheduleWeeklyReminders(hour, minute, newSettings.days);
+    }
+  }, [settings]);
+
+  const updateDays = useCallback(async (days: number[]) => {
+    const newSettings = { ...settings, days };
+    await saveSettings(newSettings);
     if (newSettings.enabled) {
-      await scheduleDailyReminder(hour, minute);
+      if (days.length > 0) {
+        await scheduleWeeklyReminders(newSettings.hour, newSettings.minute, days);
+      } else {
+        await cancelDailyReminder();
+      }
     }
   }, [settings]);
 
@@ -93,6 +112,7 @@ export function useNotificationSettings() {
     permissionGranted,
     toggleNotifications,
     updateTime,
+    updateDays,
     formatTime,
   };
 }

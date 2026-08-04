@@ -1,6 +1,5 @@
 // Powered by OnSpace.AI
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -20,25 +19,39 @@ export async function requestNotificationPermissions(): Promise<boolean> {
   return finalStatus === 'granted';
 }
 
-export async function scheduleDailyReminder(hour: number, minute: number): Promise<string | null> {
-  try {
-    await cancelDailyReminder();
-    const id = await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Time to Stretch! 🧘',
-        body: 'Your daily hamstring & hip routine is ready. 4 exercises, ~15 minutes.',
-        sound: true,
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour,
-        minute,
-      },
-    });
-    return id;
-  } catch (e) {
-    console.error('Schedule notification error:', e);
-    return null;
+/**
+ * Schedule weekly reminders for specific days of the week.
+ * @param hour - hour in 24h format
+ * @param minute - minute
+ * @param days - array of 0-6 (0 = Sunday, 6 = Saturday)
+ */
+export async function scheduleWeeklyReminders(
+  hour: number,
+  minute: number,
+  days: number[]
+): Promise<void> {
+  await cancelDailyReminder();
+
+  for (const day of days) {
+    // expo-notifications WEEKLY weekday: 1 = Sunday ... 7 = Saturday
+    const weekday = day + 1;
+    try {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Time to Stretch! 🧘',
+          body: 'Your hamstring & hip routine is ready. 4 exercises, ~15 minutes.',
+          sound: true,
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+          weekday,
+          hour,
+          minute,
+        },
+      });
+    } catch (e) {
+      console.error('Schedule weekly notification error:', e);
+    }
   }
 }
 

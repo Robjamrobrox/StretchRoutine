@@ -13,6 +13,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { Colors, Spacing, FontSize, Radius } from '@/constants/theme';
 import { Stretch } from '@/constants/stretches';
+import { StretchTimer } from '@/components/StretchTimer';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -105,6 +106,9 @@ export const StretchCard = React.memo(function StretchCard({
           </View>
         </View>
       ) : null}
+
+      {/* Timer */}
+      <StretchTimer phases={stretch.timerPhases} />
 
       {/* Complete Button */}
       <Pressable

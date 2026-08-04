@@ -1,4 +1,11 @@
 // Powered by OnSpace.AI
+export interface TimerPhase {
+  name: string;
+  duration: number; // seconds
+  cue: string; // spoken audio cue
+  color: string;
+}
+
 export interface Stretch {
   id: string;
   number: number;
@@ -8,6 +15,7 @@ export interface Stretch {
   instructions: string;
   why: string;
   emoji: string;
+  timerPhases: TimerPhase[];
 }
 
 export const STRETCHES: Stretch[] = [
@@ -22,6 +30,10 @@ export const STRETCHES: Stretch[] = [
       'Sit on the edge of a high bench. As you straighten your knee, tilt your head back to look at the ceiling. As you bend your knee back down, tuck your chin down to your chest.',
     why:
       'Clears neural trapping out of the way first so your hamstrings can actually yield in subsequent stretches.',
+    timerPhases: [
+      { name: 'Straighten Knee', duration: 2, cue: 'Straighten, head back', color: '#4ADEAF' },
+      { name: 'Bend Knee', duration: 2, cue: 'Bend, chin down', color: '#FFB347' },
+    ],
   },
   {
     id: 'seated-butterfly-pnf',
@@ -34,6 +46,11 @@ export const STRETCHES: Stretch[] = [
       'Sit tall against a wall with the soles of your feet together. Push your knees down toward the floor using your hip muscles for 3 seconds, then gently press your knees back up into your hands (resisting with 30% effort) for 5 seconds, then relax and lower them deeper.',
     why:
       'Directly targets the short adductors and rotators of the hip. Opening this bent-leg range removes the right hip pinching/sensation you felt during Test 2.',
+    timerPhases: [
+      { name: 'Push Down', duration: 3, cue: 'Push knees down', color: '#FF6B6B' },
+      { name: 'Resist Up', duration: 5, cue: 'Resist upward, 30 percent effort', color: '#FFB347' },
+      { name: 'Relax & Deepen', duration: 4, cue: 'Relax and sink deeper', color: '#4ADEAF' },
+    ],
   },
   {
     id: 'supine-banded-hamstring-pnf',
@@ -46,6 +63,10 @@ export const STRETCHES: Stretch[] = [
       'Lie flat on your back, loop a towel or strap around your foot, and lift the leg until you feel a comfortable stretch. Drive your heel down into the strap at 50% effort for 5 seconds, then relax completely and gently pull the leg slightly deeper for 10 seconds.',
     why:
       'This is your Assisted exercise. The floor prevents your upper back from rounding, forcing your hamstrings to stretch while keeping your spine neutral.',
+    timerPhases: [
+      { name: 'PUSH', duration: 5, cue: 'Drive heel into strap, 50 percent', color: '#FF6B6B' },
+      { name: 'RELAX', duration: 10, cue: 'Relax completely and deepen', color: '#4ADEAF' },
+    ],
   },
   {
     id: 'seated-single-leg-compression',
@@ -58,5 +79,9 @@ export const STRETCHES: Stretch[] = [
       'Sit upright on the floor with your back against a wall. Place your hands near your knees. Keeping your leg locked straight, lift one foot 2 inches off the ground using your hip flexor and quad, hold for 2 seconds, then lower under control.',
     why:
       'This is your Resisted exercise. Stacking this right after your PNF stretch builds active strength in your newly opened range, teaching your brain to pull the pelvis forward into the catch on the erg.',
+    timerPhases: [
+      { name: 'Lift & Hold', duration: 2, cue: 'Lift and hold', color: '#FF6B6B' },
+      { name: 'Lower Slowly', duration: 3, cue: 'Lower slowly under control', color: '#4ADEAF' },
+    ],
   },
 ];
