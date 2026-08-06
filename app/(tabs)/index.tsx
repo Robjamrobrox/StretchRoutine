@@ -1,5 +1,5 @@
 // Powered by OnSpace.AI
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { useRoutine } from '@/hooks/useRoutine';
 import { StretchCard } from '@/components/StretchCard';
 import { ProgressBar } from '@/components/ProgressBar';
 import { CompletionBanner } from '@/components/CompletionBanner';
+import { saveSession } from '@/services/historyService';
 
 function RoutineContent({ routine }: { routine: Routine }) {
   const {
@@ -27,6 +28,24 @@ function RoutineContent({ routine }: { routine: Routine }) {
     totalCount,
     allDone,
   } = useRoutine(routine.stretches);
+
+  const wasDoneRef = useRef(false);
+
+  useEffect(() => {
+    if (allDone && !wasDoneRef.current) {
+      wasDoneRef.current = true;
+      saveSession({
+        timestamp: Date.now(),
+        routineId: routine.id,
+        routineName: routine.name,
+        routineEmoji: routine.emoji,
+        completedStretchIds: routine.stretches.map(s => s.id),
+        totalStretches: routine.stretches.length,
+      });
+    } else if (!allDone && wasDoneRef.current) {
+      wasDoneRef.current = false;
+    }
+  }, [allDone, routine]);
 
   return (
     <>
