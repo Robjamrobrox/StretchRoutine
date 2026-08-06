@@ -1,8 +1,8 @@
 // Powered by OnSpace.AI
 import { useState, useCallback } from 'react';
-import { STRETCHES } from '@/constants/stretches';
+import { Stretch } from '@/constants/stretches';
 
-export function useRoutine() {
+export function useRoutine(stretches: Stretch[]) {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
@@ -32,11 +32,12 @@ export function useRoutine() {
 
   const resetRoutine = useCallback(() => {
     setCompleted(new Set());
+    setExpanded(new Set());
   }, []);
 
   const completedCount = completed.size;
-  const totalCount = STRETCHES.length;
-  const allDone = completedCount === totalCount;
+  const totalCount = stretches.length;
+  const allDone = totalCount > 0 && completedCount === totalCount;
 
   return {
     completed,

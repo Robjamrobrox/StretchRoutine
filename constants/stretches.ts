@@ -18,7 +18,18 @@ export interface Stretch {
   timerPhases: TimerPhase[];
 }
 
-export const STRETCHES: Stretch[] = [
+export interface Routine {
+  id: string;
+  name: string;
+  description: string;
+  emoji: string;
+  duration: string;
+  stretches: Stretch[];
+}
+
+// ─── Main Stretches ──────────────────────────────────────────────────────────
+
+const MAIN_STRETCHES: Stretch[] = [
   {
     id: 'sciatic-nerve-floss',
     number: 1,
@@ -85,3 +96,81 @@ export const STRETCHES: Stretch[] = [
     ],
   },
 ];
+
+// ─── Morning Routine Stretches ────────────────────────────────────────────────
+
+const MORNING_STRETCHES: Stretch[] = [
+  {
+    id: 'morning-sciatic-nerve-floss',
+    number: 1,
+    name: 'Seated Sciatic Nerve Floss',
+    subtitle: 'Neural Wake-Up',
+    sets: '60 seconds (15 reps per leg)',
+    emoji: '🌅',
+    instructions:
+      'Sit on the edge of your bed, a chair, or the erg bench. Straighten one knee while tilting your head back to look at the ceiling. Bend your knee back down while tucking your chin to your chest.',
+    why:
+      'Wakes up neural gliding first thing in the morning and clears nerve restriction so your hamstrings do not lock up during your row.',
+    timerPhases: [
+      { name: 'Straighten', duration: 2, cue: 'Straighten, head back', color: '#4ADEAF' },
+      { name: 'Bend', duration: 2, cue: 'Bend knee, chin down', color: '#FFB347' },
+    ],
+  },
+  {
+    id: 'elephant-walks',
+    number: 2,
+    name: 'Hands-Elevated Elephant Walks',
+    subtitle: 'Dynamic Hamstring Pump',
+    sets: '2 minutes (20 total alternating reps)',
+    emoji: '🐘',
+    instructions:
+      'Place your hands on a bed frame, chair, or erg rail so your torso is tilted at a gentle 45-degree angle (avoiding full floor depth while cold). Hinge at your hips, keeping your lower back long and flat. Alternately bend one knee while locking the other leg straight, driving that hip up toward the ceiling.',
+    why:
+      'Dynamically pumps blood into the hamstring tendons and forces your pelvis to practice anterior tilting without overloading your lower back.',
+    timerPhases: [
+      { name: 'Left Straight', duration: 3, cue: 'Left leg straight, right bends', color: '#4ADEAF' },
+      { name: 'Right Straight', duration: 3, cue: 'Right leg straight, left bends', color: '#64B5F6' },
+    ],
+  },
+  {
+    id: 'hip-hinge-target-touch',
+    number: 3,
+    name: 'Standing Hip Hinge with Target Touch',
+    subtitle: 'Catch Pattern Activation',
+    sets: '2 minutes (10 reps per side, 3-sec hold)',
+    emoji: '🎯',
+    instructions:
+      'Stand tall, feet hip-width apart, soft bend in your knees. Place your knuckles in the creases of your hips (where your thighs meet your pelvis). Push your hips backward into your hands while keeping your chest up and spine flat until you feel a clean stretch high in the hamstrings and sit bones. Squeeze your glutes and push your hips forward to stand tall.',
+    why:
+      'Activates active compression and teaches your body the exact "rock-over" hip hinge pattern required at the catch of your rowing stroke.',
+    timerPhases: [
+      { name: 'Hinge Back', duration: 3, cue: 'Push hips back, chest up', color: '#FF6B6B' },
+      { name: 'Hold', duration: 3, cue: 'Hold, feel the stretch at sit bones', color: '#FFB347' },
+      { name: 'Stand Tall', duration: 2, cue: 'Squeeze glutes, stand tall', color: '#4ADEAF' },
+    ],
+  },
+];
+
+// ─── Routines ─────────────────────────────────────────────────────────────────
+
+export const ROUTINES: Routine[] = [
+  {
+    id: 'main-stretches',
+    name: 'Main Stretches',
+    description: 'Full hamstring & hip flexibility program',
+    emoji: '💪',
+    duration: '~15 min',
+    stretches: MAIN_STRETCHES,
+  },
+  {
+    id: 'morning-routine',
+    name: 'Morning Routine',
+    description: 'Gentle wake-up flow before your row',
+    emoji: '🌅',
+    duration: '~7 min',
+    stretches: MORNING_STRETCHES,
+  },
+];
+
+// Legacy export for backward compatibility
+export const STRETCHES = MAIN_STRETCHES;
