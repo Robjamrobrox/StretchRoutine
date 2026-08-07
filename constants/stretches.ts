@@ -151,6 +151,75 @@ const MORNING_STRETCHES: Stretch[] = [
   },
 ];
 
+// ─── Post-Rowing Cool Down ──────────────────────────────────────────────────────
+
+const COOLDOWN_STRETCHES: Stretch[] = [
+  {
+    id: 'light-erg-paddling',
+    number: 1,
+    name: 'Light Erg Paddling or Walking',
+    subtitle: 'Lactate Flush',
+    sets: '1–2 minutes',
+    emoji: '🚣',
+    instructions:
+      'Paddle at a very light intensity (under 50% effort, low drag) or walk around the boathouse. Keep your movements relaxed and comfortable — this is active recovery, not effort.',
+    why:
+      'Keeps the muscle pump active to flush lactate and clear metabolic waste without adding mechanical strain.',
+    timerPhases: [
+      { name: 'Easy Paddle', duration: 60, cue: 'Paddle light, under 50 percent effort', color: '#64B5F6' },
+      { name: 'Easy Walk', duration: 60, cue: 'Walk easy, shake it out', color: '#81D4FA' },
+    ],
+  },
+  {
+    id: 'cooldown-sciatic-nerve-floss',
+    number: 2,
+    name: 'Seated Sciatic Nerve Floss',
+    subtitle: 'Nervous System Reset',
+    sets: '1 minute (10 slow reps per leg)',
+    emoji: '🧠',
+    instructions:
+      'Sit on the edge of your erg bench or a chair. Straighten your knee while tilting your head back to look at the ceiling, then bend your knee back while tucking your chin down to your chest. Move slowly and deliberately — this is not a rush.',
+    why:
+      'Smooths out the nervous system after high-intensity neural drive, preventing your nerves from freezing in a tight sheath post-exercise.',
+    timerPhases: [
+      { name: 'Straighten', duration: 3, cue: 'Straighten knee, head back', color: '#4ADEAF' },
+      { name: 'Bend', duration: 3, cue: 'Bend knee, chin down', color: '#64B5F6' },
+    ],
+  },
+  {
+    id: 'kneeling-lunge-hip-tuck',
+    number: 3,
+    name: 'Low Kneeling Lunge with Hip Tuck',
+    subtitle: 'Quad & Flexor Drain',
+    sets: '2 minutes (1 min hold per side)',
+    emoji: '🧎',
+    instructions:
+      'Kneel on one knee with the other foot forward. Tuck your tailbone slightly under (posterior pelvic tilt) and gently shift your weight forward until you feel a light, relaxing stretch in the front of the hip. Hold for 1 minute, then switch sides.',
+    why:
+      'Releases the hip flexors that spent the entire session contracting dynamically at the catch, without putting any stress on your hamstrings or lower back.',
+    timerPhases: [
+      { name: 'Left Side', duration: 60, cue: 'Left knee down, tuck tailbone, relax into the stretch', color: '#FFB347' },
+      { name: 'Right Side', duration: 60, cue: 'Right knee down, tuck tailbone, relax into the stretch', color: '#FF6B6B' },
+    ],
+  },
+  {
+    id: 'legs-up-passive-restore',
+    number: 4,
+    name: 'Elevated Legs-Up / Bench Lie',
+    subtitle: 'Passive Length Restorer',
+    sets: '2–3 minutes (deep belly breathing)',
+    emoji: '🛌',
+    instructions:
+      'Lie on your back on the floor and place your lower legs flat on an erg bench or chair (knees bent at 90 degrees). Rest your arms wide with palms up. Take slow, deep belly breaths — 4 seconds in through your nose, 6 seconds out through your mouth.',
+    why:
+      'Decompresses your lumbar spine after hundreds of compression strokes and signals to your central nervous system that the workout is officially over.',
+    timerPhases: [
+      { name: 'Breathe In', duration: 4, cue: 'Breathe in slowly for 4 seconds', color: '#4ADEAF' },
+      { name: 'Breathe Out', duration: 6, cue: 'Breathe out slowly for 6 seconds', color: '#64B5F6' },
+    ],
+  },
+];
+
 // ─── Routines ─────────────────────────────────────────────────────────────────
 
 export const ROUTINES: Routine[] = [
@@ -169,6 +238,14 @@ export const ROUTINES: Routine[] = [
     emoji: '🌅',
     duration: '~7 min',
     stretches: MORNING_STRETCHES,
+  },
+  {
+    id: 'post-rowing-cooldown',
+    name: 'Post-Row Cool Down',
+    description: 'Recovery flow to flush lactate and restore length',
+    emoji: '🌊',
+    duration: '~8 min',
+    stretches: COOLDOWN_STRETCHES,
   },
 ];
 
