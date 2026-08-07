@@ -20,6 +20,7 @@ const ROUTINE_COLORS: Record<string, string> = {
   'main-stretches': Colors.primary,
   'morning-routine': '#FFB347',
   'post-rowing-cooldown': '#64B5F6',
+  'beach-sprints': '#F4A261',
 };
 
 function formatTime(ts: number): string {
