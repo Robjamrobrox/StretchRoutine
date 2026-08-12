@@ -33,9 +33,7 @@ export function ProgressBar({ completed, total }: Props) {
         </Text>
       </View>
       <View style={styles.track}>
-        <Animated.View
-          style={[styles.fill, { width: widthInterpolated }]}
-        />
+        <Animated.View style={[styles.fill, { width: widthInterpolated }]} />
       </View>
     </View>
   );

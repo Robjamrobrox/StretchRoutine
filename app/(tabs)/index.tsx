@@ -78,13 +78,11 @@ function RoutineContent({ routine }: { routine: Routine }) {
 
 export default function RoutineScreen() {
   const [selectedId, setSelectedId] = useState<string>(ROUTINES[0].id);
-  const [showPicker, setShowPicker] = useState(false);
 
   const selectedRoutine = ROUTINES.find(r => r.id === selectedId) ?? ROUTINES[0];
 
   const handleSelect = useCallback((id: string) => {
     setSelectedId(id);
-    setShowPicker(false);
   }, []);
 
   return (
@@ -94,7 +92,6 @@ export default function RoutineScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <Text style={styles.appTitle}>Stretch Routine</Text>
@@ -105,8 +102,12 @@ export default function RoutineScreen() {
           </View>
         </View>
 
-        {/* Routine Selector */}
-        <View style={styles.selectorRow}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.selectorContent}
+          style={styles.selectorScroll}
+        >
           {ROUTINES.map(routine => {
             const isActive = routine.id === selectedId;
             return (
@@ -146,9 +147,8 @@ export default function RoutineScreen() {
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
 
-        {/* Routine Description */}
         <View style={styles.descriptionRow}>
           <MaterialIcons name="info-outline" size={14} color={Colors.textMuted} />
           <Text style={styles.descriptionText}>{selectedRoutine.description}</Text>
@@ -157,7 +157,6 @@ export default function RoutineScreen() {
           </Text>
         </View>
 
-        {/* Routine Content — key forces full remount on routine switch */}
         <RoutineContent key={selectedId} routine={selectedRoutine} />
       </ScrollView>
     </SafeAreaView>
@@ -177,7 +176,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     paddingBottom: Spacing.xxl,
   },
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -205,14 +203,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // Routine Selector
-  selectorRow: {
-    flexDirection: 'row',
-    gap: Spacing.sm,
+  selectorScroll: {
+    marginHorizontal: -Spacing.md,
     marginBottom: Spacing.sm,
   },
+  selectorContent: {
+    paddingHorizontal: Spacing.md,
+    gap: Spacing.sm,
+    flexDirection: 'row',
+  },
   routineTab: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.xs,
@@ -222,6 +222,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
     padding: Spacing.sm,
     minHeight: 60,
+    width: 150,
     position: 'relative',
     overflow: 'hidden',
   },
@@ -260,7 +261,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     borderRadius: 2,
   },
-  // Description
   descriptionRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -282,7 +282,6 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: Radius.sm,
   },
-  // Tip
   tip: {
     flexDirection: 'row',
     alignItems: 'center',

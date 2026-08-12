@@ -14,7 +14,7 @@ export function CompletionBanner({ onReset }: Props) {
       <MaterialIcons name="celebration" size={40} color={Colors.primary} />
       <Text style={styles.title}>Routine Complete!</Text>
       <Text style={styles.subtitle}>
-        Great work. You have finished all 4 stretches for today.
+        Great work. You have finished all stretches for today.
       </Text>
       <Pressable
         onPress={onReset}
