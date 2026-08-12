@@ -35,16 +35,16 @@ const RECIPES: Recipe[] = [
     emoji: '🥤',
     category: 'Recovery',
     prepTime: '2 min',
-    calories: '~380 kcal',
+    calories: '~420 kcal',
     ingredients: [
       { amount: '1 cup', weight: '245g', item: 'Soy milk or dairy milk' },
-      { amount: '½ cup', weight: '130g', item: 'Greek yogurt' },
+      { amount: '1/2 cup', weight: '130g', item: 'Greek yogurt' },
       { amount: '2 tbsp', weight: '32g', item: 'Peanut butter' },
       { amount: '2 tbsp', weight: '20g', item: 'Hot chocolate powder' },
       { amount: '1 medium', weight: '120g', item: 'Frozen banana' },
     ],
     instructions: [
-      'Put the milk, Greek yogurt, peanut butter, and frozen banana into a blender.',
+      'Put the milk, Greek yogurt, peanut butter, hot chocolate powder, and frozen banana into a blender.',
       'Blend on high speed for 60 seconds until smooth and creamy.',
       'Pour into a glass and drink right away.',
     ],
@@ -56,7 +56,6 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
 
   return (
     <View style={styles.card}>
-      {/* Card Header */}
       <View style={styles.cardHeader}>
         <View style={styles.emojiWrap}>
           <Text style={styles.recipeEmoji}>{recipe.emoji}</Text>
@@ -73,14 +72,13 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
               <Text style={[styles.tagText, { color: Colors.textMuted }]}>{recipe.prepTime}</Text>
             </View>
             <View style={styles.tag}>
-              <MaterialIcons name="local-fire-department" size={11} color='#FFB347' />
+              <MaterialIcons name="local-fire-department" size={11} color="#FFB347" />
               <Text style={[styles.tagText, { color: '#FFB347' }]}>{recipe.calories}</Text>
             </View>
           </View>
         </View>
       </View>
 
-      {/* Ingredients */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Ingredients</Text>
         {recipe.ingredients.map((ing, i) => (
@@ -95,17 +93,12 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         ))}
       </View>
 
-      {/* Instructions Toggle */}
       <Pressable
         onPress={() => setExpanded(v => !v)}
         style={({ pressed }) => [styles.instructionsToggle, pressed ? { opacity: 0.7 } : null]}
         accessibilityLabel={expanded ? 'Hide instructions' : 'Show instructions'}
       >
-        <MaterialIcons
-          name="menu-book"
-          size={16}
-          color={Colors.primary}
-        />
+        <MaterialIcons name="menu-book" size={16} color={Colors.primary} />
         <Text style={styles.instructionsToggleText}>How to make it</Text>
         <MaterialIcons
           name={expanded ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
@@ -138,7 +131,6 @@ export default function RecipesScreen() {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
         <View style={styles.header}>
           <View>
             <Text style={styles.headerTitle}>Recipes</Text>
@@ -149,7 +141,6 @@ export default function RecipesScreen() {
           </View>
         </View>
 
-        {/* Count banner */}
         <View style={styles.banner}>
           <MaterialIcons name="info-outline" size={14} color={Colors.primary} />
           <Text style={styles.bannerText}>
@@ -157,7 +148,6 @@ export default function RecipesScreen() {
           </Text>
         </View>
 
-        {/* Recipes */}
         {RECIPES.map(recipe => (
           <RecipeCard key={recipe.id} recipe={recipe} />
         ))}
@@ -174,8 +164,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.md,
     paddingBottom: 80,
   },
-
-  // Header
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -193,8 +181,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   headerBadgeEmoji: { fontSize: 22 },
-
-  // Banner
   banner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -203,8 +189,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   bannerText: { flex: 1, color: Colors.textMuted, fontSize: FontSize.xs },
-
-  // Card
   card: {
     backgroundColor: Colors.surface,
     borderRadius: Radius.lg,
@@ -245,8 +229,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.border,
   },
   tagText: { color: Colors.primary, fontSize: 10, fontWeight: '600' },
-
-  // Ingredients
   section: {
     padding: Spacing.md,
     borderBottomWidth: 1,
@@ -274,7 +256,7 @@ const styles = StyleSheet.create({
   },
   ingredientMeasure: {
     alignItems: 'flex-end',
-    minWidth: 64,
+    minWidth: 72,
     gap: 1,
   },
   ingredientAmount: {
@@ -293,8 +275,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     fontWeight: '400',
   },
-
-  // Instructions toggle
   instructionsToggle: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -307,8 +287,6 @@ const styles = StyleSheet.create({
     fontSize: FontSize.sm,
     fontWeight: '600',
   },
-
-  // Instructions expanded
   instructionsBox: {
     paddingHorizontal: Spacing.md,
     paddingBottom: Spacing.md,
