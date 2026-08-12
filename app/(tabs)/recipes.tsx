@@ -13,6 +13,7 @@ import { Colors, Spacing, FontSize, Radius } from '@/constants/theme';
 
 interface Ingredient {
   amount: string;
+  weight: string;
   item: string;
 }
 
@@ -36,10 +37,11 @@ const RECIPES: Recipe[] = [
     prepTime: '2 min',
     calories: '~380 kcal',
     ingredients: [
-      { amount: '1 cup', item: 'Soy milk or dairy milk' },
-      { amount: '½ cup', item: 'Greek yogurt' },
-      { amount: '2 tbsp', item: 'Peanut butter' },
-      { amount: '1', item: 'Frozen banana' },
+      { amount: '1 cup', weight: '245g', item: 'Soy milk or dairy milk' },
+      { amount: '½ cup', weight: '130g', item: 'Greek yogurt' },
+      { amount: '2 tbsp', weight: '32g', item: 'Peanut butter' },
+      { amount: '2 tbsp', weight: '20g', item: 'Hot chocolate powder' },
+      { amount: '1 medium', weight: '120g', item: 'Frozen banana' },
     ],
     instructions: [
       'Put the milk, Greek yogurt, peanut butter, and frozen banana into a blender.',
@@ -84,7 +86,10 @@ function RecipeCard({ recipe }: { recipe: Recipe }) {
         {recipe.ingredients.map((ing, i) => (
           <View key={i} style={styles.ingredientRow}>
             <View style={styles.ingredientBullet} />
-            <Text style={styles.ingredientAmount}>{ing.amount}</Text>
+            <View style={styles.ingredientMeasure}>
+              <Text style={styles.ingredientAmount}>{ing.amount}</Text>
+              <Text style={styles.ingredientWeight}>{ing.weight}</Text>
+            </View>
             <Text style={styles.ingredientItem}>{ing.item}</Text>
           </View>
         ))}
@@ -267,11 +272,20 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: Colors.primary,
   },
+  ingredientMeasure: {
+    alignItems: 'flex-end',
+    minWidth: 64,
+    gap: 1,
+  },
   ingredientAmount: {
     color: Colors.primary,
     fontSize: FontSize.sm,
     fontWeight: '700',
-    minWidth: 52,
+  },
+  ingredientWeight: {
+    color: Colors.textMuted,
+    fontSize: 10,
+    fontWeight: '500',
   },
   ingredientItem: {
     flex: 1,
